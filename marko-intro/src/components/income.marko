@@ -1,0 +1,234 @@
+style {
+
+  .main{
+    background:#FE5F55;
+    width:100%;
+    height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction: column;
+  }
+
+  .child{
+    background:white;
+    padding:10px;
+    margin-top: 30px;
+  }
+
+  .table , th, tr,td{
+    width: 700px;
+    border: 1px solid lightgray;
+    border-collapse: collapse;
+    padding:2px;
+  }
+
+  .tboddy{
+    width: 100%;
+    border: 1px solid lightgray;
+  }
+
+  .i{
+    font-size: 6px;
+    margin-left: 20px;
+  }
+
+  .popup{
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    background-color: rgba(0, 0, 0,0.4 );
+    top :0;
+    left :0;
+  }
+
+  .popup div{
+    width:40%;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: white;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+
+  input,button{
+    width:100%;
+  }
+
+}
+
+class {
+    onCreate() {
+        this.state = { count: 0 };
+        this.state = { view : false };
+    }
+}
+
+
+
+<section.main>
+     $ let name="Clinton";
+
+      $ let balance=444;
+
+      $  let user={};
+
+      $ function readValue(property,value){
+        user[property]=value;
+
+        console.log(user);
+
+      }
+
+
+      $ let expenses= [
+        {
+          name:"Food",
+          price:340, 
+        },
+        {
+          name:"Clothes",
+          price:434, 
+        },
+        {
+          name:"Rent",
+          price:64, 
+        },
+        {
+          name:"Fuel",
+          price:14, 
+        }
+      ];
+
+
+      $ function deleteExpense(id){
+
+        let inde=expenses.findIndex(function(a,i){
+          return i===id;
+        })
+
+        console.log("dhks")
+
+        expenses.splice(inde,1);
+        
+      }
+
+    $ let toUpdate;
+
+    $ function update(id){
+      let t=expenses.find(function(a,i){
+        return i===id
+      })
+
+      console.log(t)
+
+      toUpdate=t;
+    }
+
+
+  <div>
+    <input type="text" placeholder="please enter your income" on-change((event)=>
+      readValue("income",event.target.value)
+    )/>
+
+    <input type="text" placeholder="please enter your name" on-change((event)=>
+      readValue("name",event.target.value)
+    )/>
+  </div>
+
+  <div.child>
+
+    <if(state.view)>
+     <div.popup onclick(function(){
+      this.state.view=false;
+     })>
+       <div onclick(function(event){
+        event.stopPropagation();
+       })>
+         
+          <h3>
+            Update Expense
+          </h3> 
+
+          
+          
+
+          <button>Update</button>
+         
+      
+       </div>
+
+     </div>
+
+    </if>
+
+     
+
+
+      <h3>TOTAL INCOME : $ ${user.income}</h3>
+      
+
+     <table.table>
+      <thead>
+        <tr>
+          <th>
+            Expense
+          </th>
+          <th>
+            Price
+          </th>
+          <th>
+            Action
+          </th>
+        </tr>
+        
+      </thead>
+
+
+      <tbody.tboddy>
+       <for |exp ,ind| of=expenses>
+        <tr>
+          <td>
+            ${exp.name}
+          </td>
+          <td>
+            ${exp.price}
+          </td>
+
+          <td>
+            <i on-click(deleteExpense) class="fa-solid fa-trash" style="color:red">
+            </i>
+            <i on-click(update(ind) 
+              ,this.state.view=true;)class="fa-solid fa-pen-to-square" style="color:blue">
+            </i>
+            <i class="fa-solid fa-eye">
+            </i>
+          </td>
+        </tr>
+       </for>
+        
+      </tbody>
+     </table>
+
+
+    <div>
+
+      <button>
+       Calculate
+      </button>
+
+      <h3>TOTAL Balance : $ ${user.income}</h3>
+      
+
+    </div>
+
+     
+
+  </div>
+
+</section>
+
