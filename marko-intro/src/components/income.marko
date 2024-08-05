@@ -1,234 +1,295 @@
-style {
-
-  .main{
-    background:#FE5F55;
-    width:100%;
-    height:100vh;
-    display:flex;
-    align-items:center;
-    justify-content:center;
+<style>
+  .main {
+    background: #FE5F55;
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     flex-direction: column;
   }
 
-  .child{
-    background:white;
-    padding:10px;
+  .child {
+    background: white;
+    padding: 10px;
     margin-top: 30px;
   }
 
-  .table , th, tr,td{
+  .table, th, tr, td {
     width: 700px;
     border: 1px solid lightgray;
     border-collapse: collapse;
-    padding:2px;
+    padding: 2px;
   }
 
-  .tboddy{
+  .table{
+    width: 100%;
+    margin:10px;
+    padding:10px;
+    border: none;
+    border:1px solid lightgray;
+    outline: none;
+    border-radius: 10px;
+  }
+
+  .tboddy {
     width: 100%;
     border: 1px solid lightgray;
   }
 
-  .i{
+  .i {
     font-size: 6px;
     margin-left: 20px;
   }
 
-  .popup{
+  .popup {
     width: 100%;
     height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
     position: absolute;
-    background-color: rgba(0, 0, 0,0.4 );
-    top :0;
-    left :0;
+    background-color: rgba(0, 0, 0, 0.4);
+    top: 0;
+    left: 0;
   }
 
-  .popup div{
-    width:40%;
+  .popup div {
+    width: 40%;
     padding: 20px;
     border-radius: 10px;
     background-color: white;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
-  input,button{
-    width:100%;
+  input, button {
+    width: 100%;
+    margin:10px;
+    padding:10px;
+    border: none;
+    border:1px solid lightgray;
+    outline: none;
+    border-radius: 10px;
   }
 
-}
+  button{
+    width: 50%;
+  }
+</style>
+
+
 
 class {
-    onCreate() {
-        this.state = { count: 0 };
-        this.state = { view : false };
+  onCreate(input) {
+    this.state = { 
+      view : false,
+      income: 0,
+      exps:0,
+      balance:0,
+      expenses : [
+          { name: "Food", price: 340 },
+          { name: "Clothes", price: 434 },
+          { name: "Rent", price: 64 },
+          { name: "Fuel", price: 14 }
+      ],
+      user : {},
+      ex:{}
+      }
+  }
+
+
+  onMount(){
+    this.calculate()
+  }
+
+
+  reset(){
+    window.location.reload()
+  }
+
+
+
+
+  calculate(){
+    let total=0;
+    this.state.expenses.map((a,i)=>{
+      total+=a.price;
+    })
+    this.state.exps=total;
+  }
+
+
+  deleteExpense(id){
+    let index = this.state.expenses.findIndex((_, i) => i === id);
+    if (index !== -1) {
+      console.log("Deleting expense:", this.state.expenses[index]);
+      this.state.expenses.splice(index, 1);
+      this.calculate()
+      this.forceUpdate();
+    } else {
+      console.error("Expense not found");
     }
+  }
+
+  update(input) {
+    let expense = this.state.expenses.find((_, i) => i === input);
+    if (expense) {
+      this.state.ex=expense;
+      console.log("Updating expense:", expense);
+      this.state.view = true;
+      this.forceUpdate();
+    } else {
+      console.error("Expense not found");
+    }
+  }
+
+
+  readincome(inp,e){
+    if(inp==="income"){
+      this.state.income=e.target.value;
+    }
+
+  }
+
+  readValue(property, e) {
+   if(property==="name"){
+    this.state.user.name=e.target.value;
+   }
+   else if(property==="price"){
+    this.state.user.price=Number(e.target.value);
+   }
+  }
+
+  read(property, e) {
+   if(property==="name"){
+    this.state.ex.name=e.target.value;
+   }
+   else if(property==="price"){
+    this.state.ex.price=Number(e.target.value);
+   }
+  }
+
+
+  addEx() {
+    this.state.expenses.push(this.state.user);
+    console.log(this.state.expenses);
+    this.calculate()
+    this.setStateDirty("expenses");
+    this.forceUpdate();
+  }
+
+
+  popUpUpdate(){
+
+  }
+
+
+
+  addExpenseToDb(){
+    fetch("http://localhost:8000/create/expenses",{
+      method:"POST",
+      headers:{
+        "content-type":"application/json"
+      },
+      body:JSON.stringify(this.state.user)
+    })
+    .then(function(res){
+      return res.json()
+    })
+    .then(function(data){
+      console.log(data)
+    })
+    .catch(function(err){
+      console.log(err);
+    })
+  }
+
+  
 }
 
 
 
-<section.main>
-     $ let name="Clinton";
-
-      $ let balance=444;
-
-      $  let user={};
-
-      $ function readValue(property,value){
-        user[property]=value;
-
-        console.log(user);
-
-      }
-
-
-      $ let expenses= [
-        {
-          name:"Food",
-          price:340, 
-        },
-        {
-          name:"Clothes",
-          price:434, 
-        },
-        {
-          name:"Rent",
-          price:64, 
-        },
-        {
-          name:"Fuel",
-          price:14, 
-        }
-      ];
-
-
-      $ function deleteExpense(id){
-
-        let inde=expenses.findIndex(function(a,i){
-          return i===id;
-        })
-
-        console.log("dhks")
-
-        expenses.splice(inde,1);
-        
-      }
-
-    $ let toUpdate;
-
-    $ function update(id){
-      let t=expenses.find(function(a,i){
-        return i===id
-      })
-
-      console.log(t)
-
-      toUpdate=t;
-    }
-
-
+<section class="main">
+  <h4>
+    EXPENSES CALCULATOR
+  </h4>
   <div>
-    <input type="text" placeholder="please enter your income" on-change((event)=>
-      readValue("income",event.target.value)
-    )/>
 
-    <input type="text" placeholder="please enter your name" on-change((event)=>
-      readValue("name",event.target.value)
-    )/>
+    <h2>
+    TOTAL INCOME : ${state.income}
+    </h2>
+  
+    <input on-change("readincome","income") type="text" placeholder="Input income"/>
+    <button>
+      Add income 
+    </button>
+
+    <!-- <form.form> -->
+      <input type="text" placeholder="Input expense name" on-change("readValue","name") />
+      <input type="number" placeholder="Please enter expense amount" on-change("readValue","price")/>
+      <button on-click("addExpenseToDb")>
+        Add Expense
+      </button>
+      
+    <!-- </form> -->
+    
   </div>
 
-  <div.child>
 
+  
+
+  <div class="child">
     <if(state.view)>
-     <div.popup onclick(function(){
-      this.state.view=false;
-     })>
-       <div onclick(function(event){
-        event.stopPropagation();
-       })>
-         
-          <h3>
-            Update Expense
-          </h3> 
+      <div class="popup" on-click(()=> {this.state.view = false})>
+        <div>
+          <i on-click(()=> {this.state.view=false}) class="fa-solid fa-close">
+          </i>
+          <h3>Update Expense</h3>
 
-          
-          
-
+          <input type="text" value=state.ex.name on-change("read",'name')/>
+          <input type="number" value=state.ex.price on-change("read",'price')/>
           <button>Update</button>
-         
-      
-       </div>
-
-     </div>
-
+        </div>
+      </div>
     </if>
 
-     
 
-
-      <h3>TOTAL INCOME : $ ${user.income}</h3>
-      
-
-     <table.table>
+    <table class="table">
       <thead>
         <tr>
-          <th>
-            Expense
-          </th>
-          <th>
-            Price
-          </th>
-          <th>
-            Action
-          </th>
+          <th>Expense</th>
+          <th>Price</th>
+          <th>Action</th>
         </tr>
-        
       </thead>
-
-
-      <tbody.tboddy>
-       <for |exp ,ind| of=expenses>
-        <tr>
-          <td>
-            ${exp.name}
-          </td>
-          <td>
-            ${exp.price}
-          </td>
-
-          <td>
-            <i on-click(deleteExpense) class="fa-solid fa-trash" style="color:red">
-            </i>
-            <i on-click(update(ind) 
-              ,this.state.view=true;)class="fa-solid fa-pen-to-square" style="color:blue">
-            </i>
-            <i class="fa-solid fa-eye">
-            </i>
-          </td>
-        </tr>
-       </for>
-        
+      <tbody class="tboddy">
+        <for|exp, ind| of=state.expenses>
+          <tr>
+            <td>${exp.name}</td>
+            <td>${exp.price}</td>
+            <td>
+              <i on-click("deleteExpense",ind) class="fa-solid fa-trash" style="color:red"></i>
+              <i on-click('update',ind) class="fa-solid fa-pen-to-square" style="color:blue"></i>
+              <!-- <i class="fa-solid fa-eye"></i> -->
+            </td>
+          </tr>
+        </for>
       </tbody>
-     </table>
+    </table>
+
 
 
     <div>
-
-      <button>
-       Calculate
-      </button>
-
-      <h3>TOTAL Balance : $ ${user.income}</h3>
-      
+      <button>TOTAL Expenses : $ ${state.exps}</button>
+      <button>TOTAL BALANCE : $ ${state.income-state.exps}</button>
+      <button on-click('reset')>RESET</button>
 
     </div>
-
-     
-
   </div>
-
 </section>
+
+
+
 

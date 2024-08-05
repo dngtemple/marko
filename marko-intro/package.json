@@ -4,7 +4,10 @@
   "version": "1.0.0",
   "type": "module",
   "dependencies": {
-    "marko": "^5.33.5"
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "marko": "^5.33.5",
+    "mongoose": "^8.5.2"
   },
   "devDependencies": {
     "@marko/run": "^0.4.3"
