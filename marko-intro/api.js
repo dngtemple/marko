@@ -26,6 +26,9 @@ const expensesSchema=mongoose.Schema({
 const expensesModel=mongoose.model("expenses",expensesSchema)
 
 
+
+
+// endpoint to create expense
 app.post("/create/expenses",function(req,res){
     let data = req.body;
 
@@ -34,6 +37,37 @@ app.post("/create/expenses",function(req,res){
         console.log(data);
         res.send({success:true,data});
     })
+})
+
+
+// endpoint to fetch all expenses
+
+app.get("/get/all/expenses",function(req,res){
+    expensesModel.find()
+    .then(function(data){
+        res.send({success:true,data:data})
+        console.log(data);
+    })
+    .catch(function(err){
+        console.log(err);
+    })
+})
+
+
+
+// endpoint to delete one expense
+app.delete("/delete/expense/:id",function(req,res){
+    let ID = req.params.id;
+
+    expensesModel.deleteOne({_id:ID})
+    .then(function(data){
+        res.send({success:true,data:data,message:"successfull deleted"})
+        console.log(data);
+    })
+    .catch(function(err){
+        console.log(err);
+    })
+
 })
 
 

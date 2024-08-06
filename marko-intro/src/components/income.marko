@@ -1,6 +1,9 @@
 <style>
+  body{
+    background-color: lightblue;
+  }
   .main {
-    background: #FE5F55;
+    background: lightgray;
     width: 100%;
     min-height: 100vh;
     display: flex;
@@ -22,19 +25,25 @@
     padding: 2px;
   }
 
+  tr:nth-child(even){
+    background-color: lightgray;
+  }
+
   .table{
-    width: 100%;
+    width: 80%;
     margin:10px;
     padding:10px;
     border: none;
     border:1px solid lightgray;
     outline: none;
     border-radius: 10px;
+    text-align: center;
+    margin-left: 10%;
   }
 
   .tboddy {
     width: 100%;
-    border: 1px solid lightgray;
+    border: 2px solid lightgray;
   }
 
   .i {
@@ -75,25 +84,23 @@
   }
 
   button{
-    width: 50%;
+    width: 60%;
+    margin-left: 20%;
+    background-color: black;
+    color:white;
   }
 </style>
 
 
 
 class {
-  onCreate(input) {
+  onCreate() {
     this.state = { 
       view : false,
       income: 0,
       exps:0,
       balance:0,
-      expenses : [
-          { name: "Food", price: 340 },
-          { name: "Clothes", price: 434 },
-          { name: "Rent", price: 64 },
-          { name: "Fuel", price: 14 }
-      ],
+      expenses :[],
       user : {},
       ex:{}
       }
@@ -101,6 +108,7 @@ class {
 
 
   onMount(){
+    this.fetchExpenses()
     this.calculate()
   }
 
@@ -121,17 +129,17 @@ class {
   }
 
 
-  deleteExpense(id){
-    let index = this.state.expenses.findIndex((_, i) => i === id);
-    if (index !== -1) {
-      console.log("Deleting expense:", this.state.expenses[index]);
-      this.state.expenses.splice(index, 1);
-      this.calculate()
-      this.forceUpdate();
-    } else {
-      console.error("Expense not found");
-    }
-  }
+  // deleteExpense(id){
+  //   let index = this.state.expenses.findIndex((_, i) => i === id);
+  //   if (index !== -1) {
+  //     console.log("Deleting expense:", this.state.expenses[index]);
+  //     this.state.expenses.splice(index, 1);
+  //     this.calculate()
+  //     this.forceUpdate();
+  //   } else {
+  //     console.error("Expense not found");
+  //   }
+  // }
 
   update(input) {
     let expense = this.state.expenses.find((_, i) => i === input);
@@ -172,41 +180,67 @@ class {
   }
 
 
-  addEx() {
-    this.state.expenses.push(this.state.user);
-    console.log(this.state.expenses);
-    this.calculate()
-    this.setStateDirty("expenses");
-    this.forceUpdate();
-  }
+  // addEx() {
+  //   this.state.expenses.push(this.state.user);
+  //   console.log(this.state.expenses);
+  //   this.calculate()
+  //   this.setStateDirty("expenses");
+  //   this.forceUpdate();
+  // }
 
 
-  popUpUpdate(){
-
-  }
-
-
-
-  addExpenseToDb(){
-    fetch("http://localhost:8000/create/expenses",{
-      method:"POST",
-      headers:{
-        "content-type":"application/json"
-      },
-      body:JSON.stringify(this.state.user)
-    })
-    .then(function(res){
-      return res.json()
-    })
-    .then(function(data){
-      console.log(data)
-    })
-    .catch(function(err){
+  fetchExpenses = async () => {
+    try {
+      const response = await fetch("http://localhost:8000/get/all/expenses", {
+        method: "GET"
+      });
+      const data = await response.json();
+      console.log(data.data);
+      this.state.expenses = data.data;
+      console.log(this.state.expenses);
+    } catch (err) {
       console.log(err);
-    })
+    }
   }
 
-  
+
+  addExpenseToDb = async () => {
+    try {
+      const response = await fetch("http://localhost:8000/create/expenses", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(this.state.user)
+      });
+      const data = await response.json();
+      console.log(data);
+      if (data.success === true) {
+        await this.fetchExpenses();
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+
+  deletefromDb = async (id)=>{
+    try{
+      const res = await fetch(`http://localhost:8000/delete/expense/${id}`,{
+        method:"DELETE",
+      })
+
+      const data = await res.json();
+      console.log(data);
+      if(data.success===true){
+        await this.fetchExpenses()
+      }
+    }
+    catch(err){
+      console.log(err)
+    }
+  }
+
 }
 
 
@@ -259,6 +293,9 @@ class {
     <table class="table">
       <thead>
         <tr>
+          <th>
+            Index
+          </th>
           <th>Expense</th>
           <th>Price</th>
           <th>Action</th>
@@ -267,10 +304,13 @@ class {
       <tbody class="tboddy">
         <for|exp, ind| of=state.expenses>
           <tr>
+            <td>
+              ${ind+1}
+            </td>
             <td>${exp.name}</td>
             <td>${exp.price}</td>
             <td>
-              <i on-click("deleteExpense",ind) class="fa-solid fa-trash" style="color:red"></i>
+              <i on-click("deletefromDb",exp._id) class="fa-solid fa-trash" style="color:red"></i>
               <i on-click('update',ind) class="fa-solid fa-pen-to-square" style="color:blue"></i>
               <!-- <i class="fa-solid fa-eye"></i> -->
             </td>
