@@ -120,7 +120,7 @@ class {
 
 
 
-  calculate(){
+  calculate=()=>{
     let total=0;
     this.state.expenses.map((a,i)=>{
       total+=a.price;
@@ -198,6 +198,7 @@ class {
       console.log(data.data);
       this.state.expenses = data.data;
       console.log(this.state.expenses);
+      this.calculate()
     } catch (err) {
       console.log(err);
     }
@@ -217,6 +218,7 @@ class {
       console.log(data);
       if (data.success === true) {
         await this.fetchExpenses();
+        this.calculate()
       }
     } catch (err) {
       console.log(err);
@@ -234,6 +236,7 @@ class {
       console.log(data);
       if(data.success===true){
         await this.fetchExpenses()
+        this.calculate()
       }
     }
     catch(err){
